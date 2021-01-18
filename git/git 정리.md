@@ -49,6 +49,14 @@ $ git clone https://github.com/seoljaehong8/testgit.git
 
 
 
+```bash
+$git rm test.text
+```
+
+> 삭제
+
+
+
 # Git 
 
 ### Git 개념 

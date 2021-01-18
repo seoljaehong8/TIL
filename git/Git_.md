@@ -30,7 +30,7 @@
   * ## git init 할땐 `(master)` 가 없는 곳에서...
 
     * 상위 폴더에 `.git` 폴더가 있는 경우는 하위 폴더에서 따로 `git init` 을 하지 않는다.
-    * 하위 폴더의 코드를 따로 관리하고 싶을때 사용한다. (ssafy 1학기 중엔 할 일 없음.)
+    * 하위 폴더의 코드를 따로 관리하고 싶을때 사용한다.
 
 ### 2. git add
 
@@ -166,6 +166,26 @@ $ git remote -v
 
 
 
+## 7. git clone
+
+- ``` bash
+  $ git clone https://github.com/seoljaehong8/testgit.git
+  ```
+
+- github에서 repasitory를 복사해올 수 있다.
+
+
+
+## 8. git rm
+
+- ```bash
+  $ git rm test.txt
+  ```
+
+- 로컬과 원격에서 파일 삭제
+
+  
+
 ---
 
 * 오프라인 수업이 진행되었을 때 git work flow
@@ -175,6 +195,10 @@ $ git remote -v
   4. `git push origin master`
 
 ---
+
+## 
+
+
 
 ## Git 저장소
 
