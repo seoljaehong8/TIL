@@ -59,6 +59,26 @@ pgm_lang_len = sorted(pgm_lang.items(), key = lambda item: item[1])
 pgm_lang_len = sorted(pgm_lang.items(), key = lambda item: item[1], reverse=True)
 ```
 
+- 딕셔너리를 요소로 가진 리스트에서 정렬
+
+```python
+data = [{'title': 'CLI for ordering Dominos pizza', 'upvote': 265}, 
+        {'title': '100+ LeetCode solutions in Go', 'upvote': 189},
+        {'title': 'Database basics: writing a SQL database from scratch in Go', 'upvote': 240},
+        {'title': 'Generics in Go - How They Work and How to Play With Them', 'upvote': 248}]
+result = sorted(data, key=lambda x:x['upvote'], reverse=True)
+result
+
+"""
+[{'title': 'CLI for ordering Dominos pizza', 'upvote': 265},
+ {'title': 'Generics in Go - How They Work and How to Play With Them',
+  'upvote': 248},
+ {'title': 'Database basics: writing a SQL database from scratch in Go',
+  'upvote': 240},
+ {'title': '100+ LeetCode solutions in Go', 'upvote': 189}]
+"""
+```
+
 
 
 - 튜플을 딕셔너리로
