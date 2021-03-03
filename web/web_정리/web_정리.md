@@ -226,7 +226,7 @@
     - 줄 바꿈이 일어나지 않는 행의 일부 요소
     - content 너비만큼 가로 폭을 차지한다.
     - width, height, margin-top, margin-bottom을 지정할 수 없다.
-    - 상하 여백은 line-heign로 지정한다.
+    - 상하 여백은 line-height로 지정한다.
   - 대표적인 블록레벨 요소
     - div / ul, ol, li/ p / hr / form 등
   - 대표적인 인라인 요소
@@ -279,7 +279,7 @@
     - left : 요소를 왼쪽으로 띄움
     - right : 요소를 오른쪽으로 띄움
 
-  - Flesbox
+  - Flexbox
 
     - 요소 간 공간 배분과 정렬 기능을 위한 1차원(단방향) 레이아웃
 
@@ -309,7 +309,7 @@
 
       - ![image-20210206154346724](web_정리.assets/image-20210206154346724.png)
 
-    - content & items & slef
+    - content & items & self
 
       - content
 
