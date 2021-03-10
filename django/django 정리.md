@@ -103,6 +103,67 @@
 
   > ![image-20210308194004241](django 초반 설정.assets/image-20210308194004241.png)
 
+
+
+- Variable Routing
+  - 주소의 일부를 변수에 담아서 사용하는 방법
+  - `hello/java` , `hello/python` ... 
+  - urls.py 에서 `path('hello/<str:name>/', views.hello)`
+  - views.py 에서 변수를 매개변수로 만들어서 받아줘야 한다.
+    * `def hello(request, name):`
+    * 매개변수의 이름은 urls 에서 정의한 변수명과 같아야 한다.
+  - str 은 기본값이므로 생략 `<name>`
+  - 숫자는 int 로 표현 `<int:age>`
+
+
+
+- Html Form tag
+  - 사용자로 부터 입력받은 데이터를 전송하기 위한 태그
+  - 설정해야할 속성은 2가지
+    * action : 입력 데이터가 전송되는(도착하는, 전달되는) 경로
+    * method : http method 를 입력. (GET, POST), 기본값은 (GET)
+      * GET : 정보를 조회할 때, 읽어 올 때 
+      * POST: 정보의 데이터가 변경점이 있을때. (수정, 삭제, 생성)
+  - 전달을 할 때는 반드시 `submit` 동작이 필요.
+    * `<input type=submit>`
+    * `<button>`
+
+  
+
+- DTL
+
+  * 장고 템플릿에서 사용하는 내장 시스템 언어.
+  * 태그와 필터로 구성.
+  * `{% 태그 %}`  / `{% value|필터 %}`
+
+  * 값을 표현 할 때 `{{ value }}`
+
+  * 주석 : 한줄`{# #}`, 여러줄 `{% comment %} 사이에 모든 것을 주석 처리 {% endcomment %}`
+
+  * Tags
+
+    * `if / elif / else`
+      * in, not, is 사용 가능
+    * `for / for empty`
+      * forloop : counter, counter0, first, last
+    * `lorem [갯수] [단위(w, p, b)] [random]`
+
+    * `now "시간 포멧 형식"`
+      * `now "시간포맷형식" as 별명`  를 사용해서 별명을 붙일 수 있다.
+
+  * Filters - `:` 콜론뒤에 공백 없이 적어야 함.
+
+    * `add:숫자`
+    * `date:"시간 포멧 형식"`
+    * 문자 관련
+      * `capfirst` / `lower` / `title` / `upper`
+      * `truncatewords:갯수`
+      * `truncatechars:갯수` : `...` 도 갯수로 포함된다.
+    * `length` 
+    * `random`
+
+  
+
 ### 템플릿 확장 하는 방법
 
 1. 확장하는 템플릿이 위치할 폴더를 생성한다(택1)
@@ -138,7 +199,24 @@
 
 
 
+## URL namespace
 
+1. `path` 함수 세번째 위치에 `name='별명'` 추가한다.
+
+2. 경로가 필요한 부분 (링크, form action 부분) 에 `url` 템플릿 태그를 이용해서 사용하면 끝
+
+   * `{% url '별명' %}`
+
+   * 단점 : 어플리케이션이 많아지는 경우 동일한 별명이 있을 수 있다.
+     * 이러한 경우 어떤 url 인지 구분이 명확하지 않게 됨.
+   * 해결 방법 : `app_name` 지정.
+
+3. `app_name` 지정
+
+   * `app_name = 어플리케이션 이름` 
+     * app_name 을 설정한 순간 부터는 `{% url '별명' %}` 형식은 사용 불가능.
+   * 사용 방법
+     * `{% url '설정한app_name:별명'%}` 사용해서 구분을 해준다.
 
 
 
