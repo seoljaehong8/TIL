@@ -136,3 +136,214 @@
    - `urlpatterns` 라는 리스트
 3. 이제는 application 폴더의 `urls.py`에 경로를 등록하여 사용하면 된다.
 
+
+
+
+
+
+
+# model
+
+- models.py 에 작성
+
+```python
+class Article(models.Model):
+    # 길이에 제한이 있는 경우에 사용 필수인자 max_length
+    title = models.CharField(max_length=10)
+    # 글자수가 많을때, 길이에 제한을 받지 않을때.
+	content = models.TextField()
+    # 작성일
+    created_at = models.DateTimeField(auto_now_add=True)
+	# 수정일
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.title
+    
+```
+
+- Migrations
+  - django가 model에 생긴 변화를 반영하는 방법
+  - 명령어
+    - makemigrations
+    - migrate
+    - sqlmigrate
+    - showmigrations
+  - **makemigrations**
+    - model을 변경한 것에 기반한 새로운 마이그레이션(like 설계도)을 만들때 사용
+  - **migrate**
+    - 마이그레이션을 DB에 반영하기 위해 사용
+    - 설계도를 실제 DB에 반영하는 과정
+    - 모델에서의 변경 사항들과 DB의 스키마가 동기화를 이룸
+  - sqlmigrate
+    - 마이그레이션에 대한 SQL 구문을 보기 위해 사용
+    - 마이그레이션이 SQL문으로 어떻게 해석되어서 동작할지 미리 확인 할 수 있음
+  - showmigrations
+    - 프로젝트 전체의 마이그레이션 상태를 확인하기 위해 사용
+    - 마이그레이션 파일들이 migrate 됐는지 안됐는지 여부를 확인 할 수 있음
+
+# CRUD
+
+- 대부분의 컴퓨터 소프트웨어가 가지는 기본적인 데이터 처리 기능인create(생성), read(읽기), update(갱신),delete(삭제)를 묶어서 일컫는 말
+
+
+
+- shell_plus
+
+  - `pip install django-extensions`
+
+  - ```python
+    INSTALLED_APPS = [
+    	'''
+        'django_extensions',
+    	'''
+    ]
+    ```
+
+  - `pip install ipython`
+
+  - `python manage.py shell_plus`
+
+  
+
+  - **READ(all,get,filter)**
+
+  - ```shell
+    #Article이 가지고있는 데이터 모두 다 보여줘
+    In [2]: Article.objects.all()
+    Out[2]: <QuerySet []> #=> 리스트로 활용 가능
+    
+    In [3]: article = Article()
+    
+    In [5]: article
+    Out[5]: <Article: Article object (None)>
+    
+    In [6]: article.title = 'first'	# 작성
+    
+    In [7]: article.title
+    Out[7]: 'first'
+    
+    In [8]: article.content = 'django!'	# 작성
+    
+    In [9]: article.content
+    Out[9]: 'django!'
+    
+    In [12]: article.save()	# 저장
+    
+    In [13]: article
+    Out[13]: <Article: Article object (1)>
+    # sqlite에서 확인하면 데이터베이스에 저장된거 확인 가능
+    
+    In [1]: Article.objects.all()
+    Out[1]: <QuerySet [<Article: Article object (1)>]>
+    
+    # 선언과 동시에 초기화
+    In [2]: article = Article(title='second',content='django!!')
+    
+    In [3]: article
+    Out[3]: <Article: Article object (None)>
+    
+    In [4]: article.save()
+    
+    In [5]: article
+    Out[5]: <Article: Article object (2)>
+    
+    In [6]: article.pk
+    Out[6]: 2
+    
+    In [7]: article.title
+    Out[7]: 'second'
+    
+    # 클래스를 이용하여 바로 생성
+    In [9]: Article.objects.create(title='third',content='django!!!')
+    Out[9]: <Article: Article object (3)>
+    
+    # Article 클래스 안에 __str__ 함수 설정후 출력이 바꼈다. 간단하게
+    In [4]: Article.objects.get(pk=1)
+    Out[4]: <Article: first>
+    
+    In [5]: article = Article.objects.get(pk=1)
+    
+    In [6]: article
+    Out[6]: <Article: first>
+    
+    # 첫번째 객체의 content 내용과 같은 5번째 객체
+    In [14]: Article.objects.create(title='5555',content='django!')
+    Out[14]: <Article: 5555>
+    
+    In [17]: Article.objects.get(content='django!')
+    error : MultipleObjectsReturned
+    # => .get()은 pk로만 활용한다.
+    
+    #content 내용이 django!인 모든 객체를 반환(queryset 반환)
+    In [18]: Article.objects.filter(content='django!')
+    Out[18]: <QuerySet [<Article: first>, <Article: 5555>]>
+    
+    # content에 !가 포함되어 있는 객체들
+    In [19]: Article.objects.filter(content__contains='!')
+    Out[19]: <QuerySet [<Article: first>, <Article: second>, <Article: third>, <Article: 4444>, <Article: 5555>]>
+    # pk 가 1보다 큰
+    In [20]: Article.objects.filter(pk__gt=1)
+    Out[20]: <QuerySet [<Article: second>, <Article: third>, <Article: 4444>, <Article: 5555>]>  
+    ```
+
+  - **create** 하는 3가지 방법
+
+    ```shell
+    article = Article()
+    article.title = ''
+    article.content = ''
+    article.save()
+    
+    article = Article(title='',content='')
+    article.save()
+    
+    Article.objects.create(title='',content='')
+    ```
+
+  - **update**
+
+    ```shell
+    In [22]: article = Article.objects.get(pk=1)
+    
+    In [25]: article.title = 'byebye'
+    
+    In [27]: article.save()
+    
+    In [28]: article
+    Out[28]: <Article: byebye>
+    ```
+
+  - **delete**
+
+    ```shell
+    In [30]: article.delete()
+    Out[30]: (1, {'articles.Article': 1})
+    # 현재 테이블에는 2,3,4,5 번의 객체가 남아있다 이상황에서 새로운내용을 추가하면?
+    # 6번글이 작성
+    ```
+
+    
+
+# admin 등록방법
+
+- admin.py
+
+```python
+from django.contrib import admin
+# 클래스 모델 입력
+from .models import Article
+
+# Register your models here.
+admin.site.register(Article)
+```
+
+```shell
+$ python manage.py createsuperuser
+Username (leave blank to use 'user1'): admin
+Email address:		# 엔터누르면 스킵 가능(옵션)
+Password:
+Password (again):
+Superuser created successfully.
+```
+
