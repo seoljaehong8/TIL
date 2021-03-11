@@ -425,3 +425,62 @@ Password (again):
 Superuser created successfully.
 ```
 
+
+
+
+
+- redirect
+
+```python
+from django.shortcuts import render, redirect
+
+def index(request):
+    articles = Article.objects.all()
+
+    context = {
+        'articles' : articles,
+    }
+
+    return render(request,'articles/index.html',context)
+
+def create(request):
+	'''
+	'''
+
+    return redirect('articles:index')
+```
+
+
+
+- variable routing
+
+```python
+# urls.py
+urlpatterns = [
+    '''
+    '''
+    path('detail/<int:id>', views.deatil, name='detail')
+]
+
+# views.py
+def detail(request,id):
+    Article.objects.get(pk=id)
+
+    return render('articles/detail.html')
+
+# index.html
+{% extends 'base.html' %}
+
+{% block content %}
+  {% for article in articles %}
+    <p>제목: <a href="{% utl 'articles:detail' article.id %}">{{article.title}}</a>
+  '''
+  '''
+{% endfor %}
+{% endblock content %}
+
+# 두개 넘길경우 띄워쓰기 하고 하나더
+<p>제목: <a href="{% utl 'articles:detail' article.id article.title %}">{{article.title}}</a>
+
+```
+
