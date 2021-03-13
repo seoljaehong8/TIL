@@ -484,3 +484,28 @@ def detail(request,id):
 
 ```
 
+
+
+- dumpdata
+
+```bash
+# A 켬퓨터 에서 실행
+# 데이터베이스의 데이터들을 더미데이터로 변환
+$ python manage.py dumpdata articles.article	#앱이름.모델이름(모델이름은 소문자)
+# 4칸씩 들여쓰기 해달라
+$ python manage.py dumpdata --indent 4 articles.articles
+# 4칸씩 들여쓰기 한 덤프데이터를 movies.json 에 저장해라
+$ python manage.py dumpdata --indent 4 articles.articles > articles.json
+
+app폴더/fixtures/articles 폴더 생성
+articles.json 파일 이동
+
+
+# B 컴퓨터 에서 실행
+$ python manage.py migrate
+# 나의 sqlite에 데이터를 저장한다.
+$ python manage.py loaddata articles/articles.json
+
+
+```
+
