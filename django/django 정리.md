@@ -509,3 +509,138 @@ $ python manage.py loaddata articles/articles.json
 
 ```
 
+
+
+- forms.py
+
+> App 폴더 안에 생성
+
+```python
+# forms.py
+
+from django import forms
+from .models import Article
+
+# 클래스이름은 models.py 에서 정의한 클래스이름+Form
+'''
+class ArticleForm(forms.Form):
+    title = forms.CharField(max_length=10)
+    content = forms.CharField()
+'''
+    
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+
+        # field = ('title','content')
+        # 모든 필드를 입력받고 싶을때
+        fields = '__all__'
+    
+  
+# views.py
+'''
+def new(request):
+    form = ArticleForm()
+    
+    context = {
+        'form' : form
+    }
+
+    return render(request,'articles/new.html',context)
+
+def create(request):
+    # 값을 받아서 폼 인스턴스 생성.
+    form = ArticleForm(request.POST)
+
+    # 유효성 검사
+    if form.is_valid():
+        # DB에 저장 (Form으로 작성했을 때)
+        # cleaned_data : 유효성 검사를 마치면 cleaned_data를 읽을 수 있다.
+        # title = form.cleaned_data.get('title')
+        # content = form.cleaned_data.get('content')
+        # article = Article(title=title,content=content)
+        # article.save()
+
+        # DB에 저장 (ModelForm 으로 작성 했을때)
+        article = form.save() #return 은 저장된 data의 인스턴스
+
+        return redirect('articles:index')
+
+    # 유효성 검사를 실패한 경우 form에 에러메세지가 저장된다.
+    context = {
+            'form' : form,
+        }
+
+    return render(request,'articles/new.html',context)
+'''
+
+# new, create를 하나의 함수로
+def create(request):
+    if request.method == 'POST':
+        # def create 동작 : DB에 저장
+        form = ArticleForm(request.POST)
+
+        if form.is_valid():
+            article = form.save()
+            return redirect('articles:index')
+
+    else:
+        # def new 동작 : page를 보여주는 
+        form = ArticleForm()
+
+    context = {
+        'form' : form,
+    }
+    return render(request,'articles/new.html',context)
+        
+# new.html
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>NEW</h2>
+  <hr>
+  <form action="" method='POST'>
+    {% csrf_token %}
+    
+    {{form.as_p}}	# p태그로 감싸라(table(tr), p , ul(li))    
+
+    <input type="submit" value="작성하기">
+  </form>
+{% endblock content %}
+
+
+# views.py
+def edit(request,pk):
+    article = Article.objects.get(pk=pk)
+    
+    if request.method == 'POST':
+        # instance 속성값을 안 넣으면 새로운 인스턴스가 생성(edit가 아니라  create된다)
+        form = ArticleForm(request.POST,instance=article)
+
+        if form.is_valid():
+            article = form.save()
+            return redirect('articles:detail', pk)
+    else:
+        form = ArticleForm(instance=article)
+
+    context = {
+        'form' : form,
+    }
+
+    return render(request,'articles/edit.html',context)
+    
+# edit.html
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>EDIT</h2>  
+  <form action="" method="POST">
+    {% csrf_token %}
+    {{form.as_p}}  
+  
+    <button>수정</button>
+  </form>
+
+{% endblock content %}
+```
+
