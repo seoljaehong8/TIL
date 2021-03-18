@@ -715,7 +715,7 @@ def edit(request,pk):
     MEDIA_URL = '/media/'
     ```
 
-  - `models.py`(image 필드 추가)
+- `models.py`(image 필드 추가)
 
   - ```python
     from django.db import models
@@ -726,6 +726,13 @@ def edit(request,pk):
     	'''
         # 비어있어도 된다.
         image = models.ImageField(blank=True)
+        '''
+        #images폴더를 새로 하나만들고 그 안에 저장
+        image = models.ImageField(upload_to='images',blank=True)   
+        # 날짜별로 저장
+        image = models.ImageField(upload_to='images/%Y/%m/%d/',blank=True)
+        '''
+    
         '''
         '''
     
@@ -778,4 +785,63 @@ def edit(request,pk):
     {% endif %}
     ```
 
+
+
+# thumbnail (썸네일)
+
+- `pilkit` 모듈 필요 (이미지를 처리하는 프로세서를 지원, Pillow를 이용)
+- `django-imagekit` 장고에서 사용할 수 있는 
+
+순서
+
+- `pip install pilkit`
+
+- `pip install django-imagekit`
+
+- ```python
+  # settings.py
+  INSTALLED_APPS = [
+  
+      'imagekit',
+  
+  ]
+  ```
+
+- `models.py`
+
+  - ```python
+    from django.db import models
     
+    from imagekit.models import ProcessedImageField
+    from imagekit.processors import Thumbnail
+    
+    # Create your models here.
+    class Article(models.Model):
+        title = models.CharField(max_length=10)
+        content = models.TextField()
+    
+        # blank : 비어있어도 된다.
+        # image = models.ImageField(blank=True)
+        # images폴더를 새로 하나만들고 그 안에 저장
+        # image = models.ImageField(upload_to='images',blank=True)   
+        # 날짜별로 저장
+        # image = models.ImageField(upload_to='images/%Y/%m/%d/',blank=True)
+        # 썸네일 이미지
+        image = ProcessedImageField(
+            blank=True,
+            processors=[Thumbnail(200,300)],
+            format='JPEG',
+            options={
+                'quality' : 80,
+            }
+        )
+    
+        created_at = models.DateTimeField(auto_now_add=True)
+        updated_at = models.DateTimeField(auto_now=True)
+    
+        def __str__(self):
+            return self.title
+    ```
+
+  - 
+
