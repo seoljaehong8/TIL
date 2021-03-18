@@ -645,3 +645,137 @@ def edit(request,pk):
 ```
 
  
+
+
+
+# Static
+
+- 기본 static 경로
+
+  - app_name/static/
+
+- Static Files in settings.py
+
+  - `STATIC_ROOT`
+    - collectstatic이 배포를 위해 정적 파일을 수집하는 절대 경로
+    - collecstatic : 프로젝트 배포 시 흩어져 있는 정적 파일들을 모아 특정 디렉토리로 옮기는 작업
+  - `STATIC_URL` 
+    - STATIC_ROOT에 있는 정적 파일을 참조 할 대 사용할 URL
+  - `STATICFILES_DIRS`
+    - app내의 static 디렉토리 경로를 사용하는 것 외에 추가적인 정적 파일 경로 정의
+
+- app 폴더안에 static 폴더 생성
+
+  - `articles\static\articles\css,img,js\index.css ....`
+
+- load static
+
+  - ```html
+    # index.html
+    {% load static %}
+    {% block css %}
+      <link rel="stylesheet" href="{% static 'articles/css/index.css' %}">
+    {% endblock css %}
+    ```
+
+
+
+
+
+# Media
+
+- 사용자가 웹에서 업로드 하는 정적 파일(img,pdf ...)
+
+- Media Files in settings.py
+
+  - MEDIA_ROOT
+    - 사용자가 업로드 한 파일을 보관할 디렉토리의 절대 경로
+    - 실제 해당 파일의 업로드가 끝나면 어디에 파일이 저장되게 할 지 경로
+  - MEDIA_URL
+    - MEDIA_ROOT에서 제공되는 미디어를 처리하는 URL
+    - 업로드 된 파일의 주소(URL)를 만들어 주는 역할
+  - MEDIA_URL 및 STATIC_URL은 서로 다른 값을 가져야 한다.
+
+- `curd/urls.py`(프로젝틒 폴더 내의 urls.py)
+
+  - ```python
+    from django.conf import settings
+    from django.conf.urls.static import static
+    
+    urlpatterns = [
+        '''
+        '''
+    ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+    ```
+
+- `settings.py`
+
+  - ```python
+    MEDIA_ROOT = BASE_DIR / 'media'
+    MEDIA_URL = '/media/'
+    ```
+
+  - `models.py`(image 필드 추가)
+
+  - ```python
+    from django.db import models
+    
+    # Create your models here.
+    class Article(models.Model):
+    	'''
+    	'''
+        # 비어있어도 된다.
+        image = models.ImageField(blank=True)
+        '''
+        '''
+    
+        def __str__(self):
+            return self.title
+    ```
+
+- `views.py`
+
+  - ```python
+    # def create()
+    def create(request):
+        if request.method == 'POST':
+            # request.FILES 추가(사용자가 업로드한 파일)
+            form = ArticleForm(request.POST,request.FILES)
+    
+        '''        
+        '''
+        return render(request,'articles/new.html',context)
+    ```
+
+  - 
+
+- `new.html`
+
+  - ```html
+    {% extends 'base.html' %}
+    
+    {% block content %}
+      <h2>NEW</h2>
+      <hr>
+    <!-- enctype="multipart/form-data" 추가 -->
+      <form action="" method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {{form.as_p}}    
+    
+        <input type="submit" value="작성하기">
+      </form>
+      <button><a href="{% url 'articles:index' %}">BACK</a></button>
+    {% endblock content %}
+    ```
+
+- `detail.html`
+
+  - ```html
+    <!-- 이미지의 경로를 불러온다 -->
+    {% if article.image %}
+    <img src="{{ article.image.url }}" alt="{{article.image}}" srcset="">
+    {% endif %}
+    ```
+
+    
