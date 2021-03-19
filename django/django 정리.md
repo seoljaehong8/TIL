@@ -843,5 +843,26 @@ def edit(request,pk):
             return self.title
     ```
 
+    > 위 코드는 주어진 이미지 파일을 썸네일 파일로 수정하는것이고
+    >
+    > 밑에 코드는 주어진 이미지 파일은 그대로 놔두고 그 이미지를 이용하여 새로운 썸네일 파일을 만드는 것이다.
+    
+  - ```python
+    from django.db import models
+    from imagekit.models import ImageSpecField
+    from imagekit.processors import ResizeToFill
+    
+    class Profile(models.Model):
+        avatar = models.ImageField(upload_to='avatars')
+        avatar_thumbnail = ImageSpecField(source='avatar',
+                                          processors=[ResizeToFill(100, 50)],
+                                          format='JPEG',
+                                          options={'quality': 60})
+    
+    profile = Profile.objects.all()[0]
+    print(profile.avatar_thumbnail.url)    # > /media/CACHE/images/982d5af84cddddfd0fbf70892b4431e4.jpg
+    print(profile.avatar_thumbnail.width)  # > 100
+    ```
+  
   - 
 
