@@ -696,7 +696,7 @@ def edit(request,pk):
     - 업로드 된 파일의 주소(URL)를 만들어 주는 역할
   - MEDIA_URL 및 STATIC_URL은 서로 다른 값을 가져야 한다.
 
-- `curd/urls.py`(프로젝틒 폴더 내의 urls.py)
+- `crud/urls.py`(프로젝트 폴더 내의 urls.py)
 
   - ```python
     from django.conf import settings
