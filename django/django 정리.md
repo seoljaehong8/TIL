@@ -864,5 +864,176 @@ def edit(request,pk):
     print(profile.avatar_thumbnail.width)  # > 100
     ```
   
-  - 
+
+
+
+# 로그인
+
+- Authenticiation
+  - 직원인지
+  - 인증
+  - 자신이 누구라고 주장하는 사람의 신원을 확인하는것
+
+- Authorization
+  - 직책
+  - 권한,허가
+  - 가고 싶은 곳으로 가도록 혹은 원하는 정보를 얻로고 허용하는 과정
+- Django Authentication Syste
+  - 인증과 권한부여를 함께 제공
+  - django에서는 이러한 기능이 어느정도 결홥되어 일반적으로 `authentication system(인증 시스템)`이라고 한다
+  - 크게 `User object`와 `Web request`
+
+- django는 기본적으로 인증에 관련된 `built-in form`들을 제공
+  - 회원가입(UserCreationForm), 로그인(AuthenticationsForm)등
+- 로그인
+  - 로그인은 세션을 create하는 로직과 같다
+  - login()
+    - Request 객체와 User객체를 통해 로그인
+    - Django의 session framework를 통해 사용자의 ID를 세션에 저장
+
+```python
+# views.py
+def login(request):
+    # 로그인 상태면 로그인 화면으로 가지말고 index화면으로 
+    if request.user.is_authenticated:
+        return redirect('articles:index')
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request,request.POST)
+        #form = AuthenticationForm(request,data=request.POST)
+        if form.is_valid():
+            # 세션 CREATE
+            auth_login(request, form.get_user())
+            return redirect(request.GET.get('next') or 'articles:index')
+    else:
+        form = AuthenticationForm()
+
+    context = {
+        'form' : form,
+    }
+
+    return render(request,'accounts/login.html',context)
+```
+
+
+
+- 로그아웃
+  - 로그아웃은 세션을 delete하는 로직과 같다
+  - logout()
+    - Request객체를 받으며 return이 없다
+    - 현재 요청에 대한 DB의 세션 데이터를 삭제하고 클라이언트 쿠키에서도 sessionid를 삭제
+
+```python
+@require_POST
+def logout(request):
+    auth_logout(request)
+    return redirect('articles:index')
+```
+
+
+
+- 회원가입
+
+```python
+@require_http_methods(['GET','POST'])
+def signup(request):
+    # 로그인이 되어 있다면
+    if request.user.is_authenticated:
+        return redirect('articles:index')
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth_login(request, user)
+            return redirect('articles:index')
+    else:
+        form = UserCreationForm()
+    
+    context = {
+        'form' : form,
+    }
+
+    return render(request,'accounts/signup.html',context)
+```
+
+
+
+- 회원탈퇴
+
+```python
+@require_POST
+def delete(request):
+    if request.user.is_authenticated:
+        request.user.delete()
+    return redirect('articles:index')
+```
+
+
+
+- 회원정보수정
+
+```python
+@login_required
+def update(request):
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('articles:index')
+    else:
+        form = CustomUserChangeForm(instance=request.user)
+
+    context = {
+        'form' : form,
+    }
+
+    return render(request,'accounts/update.html',context)
+```
+
+
+
+- forms.py
+
+```python
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth import get_user_model
+
+class CustomUserChangeForm(UserChangeForm):
+
+    class Meta():
+        model = get_user_model()
+        fields = ('email','first_name','last_name')
+```
+
+
+
+- base.html
+
+```html
+<body>
+  <div class="container">
+    <h3>Helllo, {{ request.user }}</h3>
+    
+    {% if request.user.is_authenticated  %}
+      <a href="{% url 'accounts:update' %}">회원정보수정</a>
+      <form action="{% url 'accounts:logout' %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Logout">
+      </form>    
+      <form action="{% url 'accounts:delete' %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="회원탈퇴">
+      </form>
+    {% else %}
+      <a href="{% url 'accounts:login' %}">Login</a>
+      <a href="{% url 'accounts:signup' %}">Signup</a>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+  </div>
+  {% bootstrap_javascript %}
+</body>
+```
 
