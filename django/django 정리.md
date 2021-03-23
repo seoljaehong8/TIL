@@ -893,6 +893,15 @@ def edit(request,pk):
 
 ```python
 # views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
+# from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
+from .forms import CustomUserChangeForm
+
 def login(request):
     # 로그인 상태면 로그인 화면으로 가지말고 index화면으로 
     if request.user.is_authenticated:
@@ -964,6 +973,8 @@ def signup(request):
 ```python
 @require_POST
 def delete(request):
+     # 만약 탈퇴하는 사용자의 세션 또한 삭제하고 싶다면 탈퇴 후 로그아웃 함수 호출
+        # 로그아웃과 탈퇴의 순서가 바뀌면 안됨 (먼저 로그아웃 해버리면 해당 요청 정보가 없어지기 때문에 탈퇴에 필요한 정보가 없어짐)       
     if request.user.is_authenticated:
         request.user.delete()
     return redirect('articles:index')
@@ -1035,5 +1046,124 @@ class CustomUserChangeForm(UserChangeForm):
   </div>
   {% bootstrap_javascript %}
 </body>
+```
+
+
+
+- user list
+
+```python
+# views.py
+from django.contrib.auth.forms import get_user_model
+def userlist(request):
+    users = get_user_model().objects.all()
+
+    context = {
+        'users' : users,
+    }
+
+    return render(request,'accounts/userlist.html',context)
+```
+
+```html
+# userlist.html
+{% extends 'base.html' %}
+
+{% block content %}
+  {% for user in users1 %}
+    <p>username : {{user.username}}</p>
+    <p>useremail : {{user.email}}</p>
+    <hr>
+  {% endfor %}
+{% endblock content %}
+```
+
+
+
+- change password
+
+```python
+# views.py
+def change_pw(request):
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request,user)
+            return redirect('accounts:update')
+    else:
+        form = PasswordChangeForm(request.user)
+    
+    context = {
+        'form' : form,
+    }
+    
+    return render(request,'accounts/change_pw.html',context)
+```
+
+
+
+# Snippets
+
+> 내가 원하는 단축키를 설정할수 있다
+>
+> 원하는 코드 형식을등록하여 빠르게 코딩 가능
+>
+> html 파일에서 `!` 를 누르는 경우와 비슷
+>
+> https://snippet-generator.app/ (문법 자동 변환)
+
+```json
+{
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",	# 어떤 언어에서 우리의 스니펫을 작동시킬것인지
+	// 	"prefix": "log",	# 단축키(ex : !)
+	// 	"body": [
+	// 		"console.log("$1");",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	"BASE HTML" : {
+		"scope" : "html, django-html",
+		"prefix": "base html",
+		"body": [
+			"<!DOCTYPE html>",
+			"<html lang=\"en\">",
+			"<head>",
+			"	<meta charset=\"UTF-8\">",
+			"	<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">",
+			"	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+			"	<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl\" crossorigin=\"anonymous\">",
+			"	<title>Document</title>",
+			"</head>",
+			"<body>",
+			"",	
+			"	<div class=\"container\">",
+			"		{% block content %}",
+			"		{% endblock content %}",
+			"	</div>",
+			"",	
+			"	<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0\" crossorigin=\"anonymous\"></script>",
+			"</body>",
+			"</html>"
+		],
+		"description": "Django Base Html"
+	},
+
+	"Base Template" : {
+		"scope": "html, django-html",
+		"prefix": "base template",
+		"body": [
+			"{% extends 'base.html' %}",
+			"",
+			"{% block content %}",
+			"$0",
+			"{% endblock content %}"
+		]
+	}
+}
 ```
 
