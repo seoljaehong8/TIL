@@ -256,11 +256,13 @@
         # users에서 계좌잔액순으로 내림차순 정렬하여 해당하는 사람의 성과 이름을 10개만?
       SELECT first_name, last_name FROM users ORDER BY balance DESC LIMIT 10;
         
-      # GROUP BY (지정된 기준에 따라 행 세트를 그룹으로 결합한다, 데이터를 요약하는 상황)
-        # users에서 각 성씨가 몇명씩 있는지 조회
-        SELECT last_name,COUNT(last_name) FROM users GROUP BY last_name;
-        # 출력시 필드명이 별칭으로 나온다.
-        SELECT last_name,COUNT(last_name) AS name_count FROM users GROUP BY last_name;
+        ```
+      - GROUP BY (지정된 기준에 따라 행 세트를 그룹으로 결합한다, 데이터를 요약하는 상황)
+      - users에서 각 성씨가 몇명씩 있는지 조회
+      - SELECT last_name,COUNT(last_name) FROM users GROUP BY last_name;
+      - 출력시 필드명이 별칭으로 나온다.
+      - SELECT last_name,COUNT(last_name) AS name_count FROM users GROUP BY last_name;
+      
         ```
         
         # 와일드카드(wild cards)
@@ -273,6 +275,7 @@
           -  (%a% : a가 가운데 있는)
         
         ![image-20210325131435286](DB(sqlite3).assets/image-20210325131435286.png)
+        ```
     
     
     
