@@ -646,6 +646,74 @@ def edit(request,pk):
 
  
 
+- Widgets
+
+```python
+class ArticleForm(forms.ModelForm):
+    title = forms.CharField(
+        label='제목',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'my-title', 
+                'placeholder': 'Enter the title',
+                'maxlength': 10,
+            }
+        ),
+    )
+    content = forms.CharField(
+        label='내용',
+        widget=forms.Textarea(
+            attrs={
+                'class': 'my-content',
+                'placeholder': 'Enter the content',
+                'rows': 5,
+                'cols': 50,
+            }
+        ),
+        error_messages={
+            'required': 'Please enter your content'
+        }
+    )
+    
+    class Meta:
+        model = Article
+        fields = '__all__'
+```
+
+
+
+- Error message with Bootstrap
+
+```html
+<!-- articles/create.html -->
+
+<form action="" method="POST">
+  {% csrf_token %}
+  {% for field in form %}
+    {% if field.errors %}
+      {% for error in field.errors %}
+        <div class="alert alert-warning" role="alert">{{ error|escape }}</div>
+      {% endfor %}
+    {% endif %}
+    <div class="form-group">
+      {{ field.label_tag }} 
+      {{ field }}
+    </div>
+  {% endfor %}
+  <button class="btn btn-primary">작성</button>
+</form>
+```
+
+
+
+- Form과 ModelForm의 핵심 차이점
+  - Form
+    - 어떤 모델에 저장해야 하는지 알 수 없기 때문에 유효성 검사를 하고 실제로 DB에 저장할 때는  `cleaned_data` 와 `article = Article(title=title, content=content)` 를 사용해서 따로 `.save()` 를 해야 한다.
+    - Form Class가 `cleaned_data` 로 딕셔너리로 만들어서 제공해 주고, 우리는 `.get` 으로 가져와서 Article 을 만드는데 사용한다.
+  - ModelForm
+    - django 가 해당 모델에서 양식에 필요한 대부분의 정보를 이미 정의한다.
+    - `forms.py` 에 Meta 정보로 `models.py` 에 이미 정의한  Article 을 넘겼기 때문에 어떤 모델에 레코드를 만들어야 할지 알고 있어서 바로 `.save()` 가 가능하다.
+
 
 
 # Static
@@ -657,12 +725,77 @@ def edit(request,pk):
 - Static Files in settings.py
 
   - `STATIC_ROOT`
+    
+    - Django 프로젝트에서 사용하는 모든 정적 파일을 한 곳에 모아넣는 경로
+    
+    - collectstatic이 배포를 위해 정적파일을 수집하는 절대 경로
+    
+    - DEBUG=True(개발 단계)로 설정되어 있으면 작용하지 않음
+    
+    - 개발단계에서는 경로를 작성하지 않아도 문제없이 동작
+    
+    - 즉, 실제 서비스 배포 환경에서 필요한 경로
+    
     - collectstatic이 배포를 위해 정적 파일을 수집하는 절대 경로
+    
     - collecstatic : 프로젝트 배포 시 흩어져 있는 정적 파일들을 모아 특정 디렉토리로 옮기는 작업
+    
+      > [참고]
+      >
+      > collectstatic
+      >
+      > - 프로젝트 배포시 흩어져 있는 정적 파일들을 모아 특정 디렉토리로 옮기는 작업
+      >
+      > ```python
+      > # settings.py 예시
+      > 
+      > STATIC_ROOT = BASE_DIR / 'staticfiles'
+      > ```
+      >
+      > ```shell
+      > $ python manage.py collectstatic
+      > ```
+    
   - `STATIC_URL` 
-    - STATIC_ROOT에 있는 정적 파일을 참조 할 대 사용할 URL
+    
+    - `STATIC_ROOT`에 있는 정적파일을 참조 할 때 사용할 URL
+      - 실제 파일이나 디렉토리가 아니며, URL로만 존재
+    - 비어 있지 않은 값으로 설정 한다면 반드시 slash(/)로 끝나야 함
+    
   - `STATICFILES_DIRS`
+    
     - app내의 static 디렉토리 경로를 사용하는 것 외에 추가적인 정적 파일 경로 정의
+    
+    - ```html
+      <!-- base.html -->
+      
+      <head>
+        {% block css %}{% endblock %}
+      </head>
+      ```
+    
+    - ```python
+      # settings.py​STATICFILES_DIRS = [    BASE_DIR / 'crud' / 'static',]
+      ```
+    
+    - ```html
+      <!-- articles/index.html -->
+      
+      {% extends 'base.html' %}
+      {% load static %}
+      
+      {% block css %}
+        <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+      {% endblock %}
+      ```
+    
+    - ```css
+      /* crud/static/stylesheets/style.css */
+      
+      h1 {
+          color: crimson;
+      }
+      ```
 
 - app 폴더안에 static 폴더 생성
 
@@ -867,7 +1000,7 @@ def edit(request,pk):
 
 
 
-# 로그인
+# Auth
 
 - Authenticiation
   - 직원인지
@@ -1166,4 +1299,263 @@ def change_pw(request):
 	}
 }
 ```
+
+
+
+
+
+# Model Relationship
+
+## Foreign Key
+
+**개념**
+
+- 외래 키(외부 키)
+- RDBMS에서 한 테이블의 필드 중 다른 테이블의 행을 식별할 수 있는 키
+- 참조하는 테이블에서 1개의 키(속성 또는 속성의 집합)에 해당하고 이는 참조되는 측의 테이블의 기본 키를 가리킴
+- 참조하는 테이블의 속성의 행 1개의 값은, 참조되는 측 테이블의 행 값에 대응
+  - 이 때문에 참조하는 테이블의 행에는, 참조되는 테이블에 나타나지 않는 값을 포함할 수 없음
+- 참조하는 테이블의 행 여러 개가, 참조되는 테이블의 동일한 행을 참조할 수 있음
+
+**특징**
+
+- 키를 사용하여 부모 테이블의 유일한 값을 참조 (참조 무결성)
+- 외래 키의 값이 부모 테이블의 기본 키 일 필요는 없지만 유일해야 함
+
+
+
+## ForeignKey field
+
+> A many-to-one relationship
+
+- 2개의 필수 위치 인자가 필요
+  - 참조하는 model class
+  - on_delete 옵션
+
+
+
+## 1:N model manager
+
+```python
+# articles/models.py
+
+class Comment(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.content
+```
+
+`on_delete`
+
+- ForeignKey의 필수 인자이며, ForeignKey가 참조하고 있는 부모(Article) 객체가 사라졌을 때 달려 있는 댓글들을 어떻게 처리할 지 정의
+- Database Integrity(데이터 무결성)을 위해서 매우 중요한 설정이다.
+
+
+
+**possible values for `on_delete`**
+
+- `CASCADE` : **부모 객체(참조 된 객체)가 삭제 됐을 때 이를 참조하는 객체도 삭제**
+- `PROTECT` 
+- `SET_NULL`
+- `SET_DEFAULT`
+- `SET()`
+- `DO_NOTHING` 
+- `RESTRICT`
+
+
+
+**1 : N 관계 manager**
+
+- **Article(1)** : **Comment(N)** : `comment_set`
+  - `article.comment` 형태로는 가져올 수 없다. 
+  - 게시글에 몇 개의 댓글이 있는지 Django ORM이 보장할 수 없기 때문
+  - 본질적으로는 Article 클래스에 Comment 와의 어떠한 관계도 연결하지 않음
+- **Comment(N)** : **Article(1)** : `article`
+  - 댓글의 경우 어떠한 댓글이든 반드시 자신이 참조하고 있는 게시글이 있으므로 `comment.article`와 같이 접근할 수 있음
+
+
+
+## Comment 관련 추가 사항
+
+### 댓글 개수 출력
+
+```html
+# 1. {{ comments|length }}
+
+# 2. {{ article.comment_set.all|length }}
+
+# 3. {{ comments.count }} 
+```
+
+
+
+
+
+# custom authentication
+
+## User model 대체하기
+
+- 일부 프로젝트에서는 Django의 내장 유저 모델이 제공하는 인증 요구사항이 적절하지 않을 수 있다.
+- django는 custom model을 참조하는 `AUTH_USER_MODEL` 설정을 제공하여 default user model을 재정의(override)할 수 있도록 한다.
+- django는 새 프로젝트를 시작하는 경우 기본 사용자 모델이 충분하더라도 커스텀 유저 모델을 설정하는 것을 강력하게 권장(highly recommended)
+  - 커스텀 유저 모델은 기본 사용자 모델과 동일하게 작동하지만 필요한 경우 나중에 맞춤 설정할 수 있기 때문이다.
+- **단, 프로젝트의 모든 migrations 혹은 첫 migrate를 실행하기 전에 이 작업을 마쳐야 한다.**
+
+```python
+# settings.py
+
+AUTH_USER_MODEL = 'accounts.User' 
+
+# accounts/models.py
+
+from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+    pass
+
+# accounts/admin.py
+
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from .models import User
+
+
+admin.site.register(User, UserAdmin
+```
+
+
+
+### AUTH_USER_MODEL
+
+- User를 나타내는데 사용하는 모델
+
+- 주의 사항
+
+  - 프로젝트를 진행하는 동안 (즉, 프로젝트에 의존하는 모델을 만들고 마이그레이션 한 후) 설정은 변경할 수 없다. (변경하려면 큰 노력이 필요)
+  - 프로젝트 시작 시 설정하기 위한 것이며, 참조하는 모델은 첫번째 마이그레이션에서 사용할 수 있어야 함
+
+  
+
+**데이터베이스 초기화 후 마이그레이션 (프로젝트 중간이라면)**
+
+1. migrations 파일 삭제
+2. db.sqlite3 삭제
+3. migrations 진행
+
+
+
+**`AbstractUser` vs `AbstractBaseUser`**
+
+- `AbstractBaseUser`
+  - password 와 last_login 만 기본적으로 제공
+  - 자유도가 높지만 필요한 필드는 모두 작성해야 함
+- `AbstractUser`
+  - 관리자 권한과 함께 완전한 기능을 갖춘 사용자 모델을 구현하는 기본 클래스
+
+
+
+## Custom user and built-in auth forms
+
+- 유저모델 대체 후 회원가입 시 에러 발생
+- AbstractBaseUser의 모든 subclass와 호환되는 forms
+  - AuthenticationForm, SetPasswordForm, PasswordChangeForm, AdminPasswordChangeForm
+- User와 연결되어 있어서 커스텀 유저 모델을 사용하려면 다시 작성하거나 확장해야 하는 forms
+  - UserCreationForm, UserChangeForm
+
+```python
+# accounts/forms.py
+
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+
+
+class CustomUserCreationForm(UserCreationForm):
+
+    class Meta(UserCreationForm.Meta):
+        model = get_user_model()
+        fields = UserCreationForm.Meta.fields + ('email',)
+```
+
+
+
+`settings.AUTH_USER_MODEL`
+
+- 유저 모델에 대한 외래 키 또는 다대다 관계를 정의 할 때 사용
+- models.py에서 유저 모델을 참조할 때 사용
+
+<br>
+
+`get_user_model()`
+
+- django는 User를 직접 참조하는 대신 django.contrib.auth.get_user_model()을 사용하여 사용자 모델을 참조해야 한다고 권장
+- 현재 활성화(active)된 user model을 반환
+  - 커스텀한 유저 모델이 있을 경우는 커스텀 유저 모델, 그렇지 않으면 User를 반환
+  - 이것이 User를 직접 참조하지 않는 이유
+- models.py가 아닌 다른 모든 곳에서 유저 모델을 참조할 때 사용
+
+```python
+# articles/models.py
+
+from django.conf import settings
+
+
+class Article(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+```
+
+```shell
+$ python manage.py makemigrations
+```
+
+```shell
+# 첫번째 상황(null 값이 허용되지 않는 user_id 가 아무 값도 없이 article 에 추가되려 하기 때문)
+$ python manage.py makemigrations
+You are trying to add a non-nullable field 'user' to article without a default; we can't do that (the database needs something to populate existing rows).
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+ 2) Quit, and let me add a default in models.py
+Select an option: # 1 입력하고 enter
+
+# 두번째 상황(그럼 기존 article 의 user_id 로 어떤 데이터를 넣을건지 물어봄)
+Please enter the default value now, as valid Python
+The datetime and django.utils.timezone modules are available, so you can do e.g. timezone.now
+Type 'exit' to exit this prompt
+>>> # 1 입력하고 enter (그럼 현재 작성된 모든 글은 1번 user가 작성한 것으로 됨)
+```
+
+```shell
+$ python manage.py migrate
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
