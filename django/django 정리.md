@@ -3,7 +3,7 @@
 - git bash
 
   > ``` bash
-  > django-admin startproject mypjt01
+  > django-admin startproject mypjt01 
   > python manage.py startapp myapp01
   > ```
   >
