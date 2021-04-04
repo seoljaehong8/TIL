@@ -6,7 +6,7 @@
 
 ```python
 SIZE = 100
-Q = [0] * SIZE
+Q = [0] * SIZE 
 front, rear = -1, -1
 def isFull():
     return rear == (len(Q) - 1)
