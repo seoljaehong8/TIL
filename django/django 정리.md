@@ -41,7 +41,7 @@
   > ]
   > ```
   >
-  > `myapp01` 로 서버요청이 오면 `myapp01.urls`로 가라
+  > `myapp01` 로 서버요청이 오면 `myapp01.urls`로 가라.
 
 - `mypjt01/myapp01/ursl.py` 파일 생성
 
