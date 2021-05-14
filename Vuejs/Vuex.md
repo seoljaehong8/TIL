@@ -1,5 +1,13 @@
 # Vuex
 
+```bash
+$ npm install vuex
+$ vue create mypjt
+$ vue add vuex
+```
+
+
+
 > Vuex 는 Vue.js 애플리케이션에 대한 `상태관리 패턴 + 라이브러리` 이다. 애플리케이션의 모든 컴포넌트에 대한 중앙 집중식 저장소 역할을 하며 예측 가능한 방식으로 상태를 변경할 수 있다. 또한 Vue의 공식 devtools 확장 프로그램과 통합되어 설정 시간이 필요없는 디버깅 및 상태 스냅 샷 내보내기/가져오기와 같은 고급 기능을 제공한다.
 >
 > - **State**
@@ -196,7 +204,7 @@ export default {
 >         <span @click="updateTodo(todo)" :class="{completed: todo.completed}">{{ todo.title }} </span>
 >         <button @click="deleteTodo(todo)">Delete</button>
 >       </li>
->       
+>         
 >     </div>
 >   </template>
 >   <style>
