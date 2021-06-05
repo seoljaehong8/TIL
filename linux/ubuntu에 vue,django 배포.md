@@ -43,7 +43,7 @@ $ sudo firewall-cmd --version
 # 새로운 rule 적용
 $ sudo firewall-cmd --permanent --zone=public --add-port=80/tcp
 $ sudo firewall-cmd --reload
-
+ 
 # 모든 값 조회
 $ sudo firewall-cmd --list-all
 ```
