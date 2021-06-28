@@ -125,6 +125,7 @@ $ sudo firewall-cmd --list-all
 > > ```
 > >
 > > ```bash
+> > # cors error
 > > # /etc/apache2/apache2.conf 추가하기
 > > WSGIPassAuthorization On
 > > ```
@@ -192,8 +193,8 @@ $ sudo vi /etc/nginx/sites-available/default
 
 ```
 server {
-        listen 3000 default_server;
-        listen [::]:3000 default_server;
+        listen 80 default_server;
+        listen [::]:80 default_server;
 
 
         root /var/www/html/dist;
