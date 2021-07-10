@@ -29,7 +29,11 @@ $ mv docker/docker /usr/local/bin
 $ rm -r docker docker-20.10.7.tgz
 
 $ cd /home
+
+# git 유저정보를 저장
+$ git config --global credential.helper store
 $ git clone ~~~
+# id, pw 입력 (보안을 위해 Acess Token을 발급받아 패스워드 대신 입력하자)
 ```
 
 
@@ -65,30 +69,38 @@ $ git clone ~~~
 
     > ```bash
     > cd /home/jenkins-test
-    > rm -rf dist
+    > git pull origin master
     > npm install
-    > npm install -g @vue/cli
     > npm run build
-    > docker rm -f nginx || true
-    > docker rmi -f mynginx || true
-    > docker build -t mynginx .
-    > docker run -p 80:80 --name nginx mynginx 
+    > cp -r dist /var/jenkins_home/workspace/{jenkins item이름}/
     > ```
 
-
-
-- /home/jenkins-test 디렉토리 구조
-
-![image-20210709205230416](Jenkins 기본.assets/image-20210709205230416.png)
-
-- Dockerfile
-
-```bash
-FROM nginx:stable-alpine
-COPY dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx","-g","daemon off;"]
-```
+> 여기서 `cp -r dist /var/jenkins_home/workspace/test/`  해주는 이유는  젠킨스 서버의 이 폴더와 내 로컬 폴더의 `/home/jenkins/workspace/test` 이 경로가 현재 마운트 되고 있기 때문에 로컬에서 이 폴더로 nginx의 설정을 바꿔주기 위함이다
+>
+> - /etc/nginx/sites-available/default 수정
+>
+> ```bash
+> server {
+>         listen 80 default_server;
+>         listen [::]:80 default_server;
+> 
+> 
+>         root /home/jenkins/workspace/test/dist;
+> 
+>         index index.html index.htm index.nginx-debian.html;
+> 
+>         server_name _;
+> 
+>         location / {
+>                 try_files $uri $uri/ /index.html;
+>         }
+> }
+> ```
+>
+> ```bash
+> $ sudo service nginx restart
+> $ sudo systemctl enable nginx
+> ```
 
 
 
@@ -197,6 +209,3 @@ $ sudo vi /etc/fstab
 /swapfile swap swap defaults 0 0
 ```
 
-
-
-- swap 후 빌드 시 서버상태
