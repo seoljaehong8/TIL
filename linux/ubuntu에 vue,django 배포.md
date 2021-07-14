@@ -216,3 +216,46 @@ $ sudo apt install npm
 > vue 프로젝트 폴더에서 `npm run build` 를 하면 dist 디렉토리에 배포파일이 뽑아져 나올 것이다.
 
 > dist 폴더를 `/var/www/html/` 폴더 안으로 이동시킨다.
+
+
+
+
+
+```bash
+$ sudo apt update
+$ sudo apt install mysql-server
+$ mysql -u admin -p -h mysql-1.cxgaxmvbweba.us-east-1.rds.amazonaws.com
+
+mysql> create database movies;
+mysql> create user 'jaehong'@'%' identified by 'woghd2816!';
+mysql> grant all privileges on movies.* to 'jaehong'@'%';
+mysql> show grants for 'jaehong'@'%';
+mysql> flush privileges;
+
+# 밑에 설치로 안되면 그다음 설치할 것
+$ sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
+
+$ sudo aptinstall libmysqlclient-dev
+$ sudo apt install python3-mysqldb
+$ sudo apt-get install gcc -y
+
+
+
+DATABASES = {
+          'default': {
+             # 'ENGINE': 'django.db.backends.sqlite3',
+              'ENGINE': 'django.db.backends.mysql',
+             # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+              'NAME':'movies',
+              'USER':'jaehong',
+              'PASSWORD':'woghd2816!',
+              'HOST':'mysql-1.cxgaxmvbweba.us-east-1.rds.amazonaws.com
+',
+              'PORT':'3306',
+              'OPTIONS':{
+                  'init_command':"SET sql_mode='STRICT_TRANS_TABLES'",
+              },
+          }
+      }  
+```
+
