@@ -7,7 +7,7 @@ Jenkins
 $ sudo docker pull jenkins/jenkins:lts
 
 # 젠킨스 컨테이너안에서 새롭게 우리의 프로젝트 컨테이너를 구동시킬 것이기 때문에 docker.sock 파일을 볼륨해준다.
-$ sudo docker run -d -p 8080:8080 -v /home/jenkins:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -u root --name jenkins jenkins/jenkins
+$ sudo docker run -d -p 9090:8080 -v /home/jenkins:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker  -u root --name jenkins jenkins/jenkins
 
 $ sudo docker logs jenkins
 # 로그 중 비밀번호 확인후 8080번 포트로 접속한 후 로그인
