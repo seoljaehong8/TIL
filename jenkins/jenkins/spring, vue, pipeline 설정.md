@@ -142,7 +142,7 @@ $ sudo docker logs jenkins
   }
   ```
 
-  - mattermost와 연동할 경우
+  - mattermost와 연동할 경우 
 
   ```bash
   pipeline {
