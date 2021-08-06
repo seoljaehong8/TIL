@@ -30,6 +30,10 @@ RUN npm run build
 # production stage
 FROM nginx:stable-alpine as production-stage
 
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY ./nginx/homepage.conf /etc/nginx/conf.d/homepage.conf
+
 COPY --from=build-stage home/node/app/dist /usr/share/nginx/html
 
 EXPOSE 80
@@ -37,6 +41,19 @@ EXPOSE 80
 # 컨테이너 실행시 실행할 명령어
 CMD ["nginx", "-g", "daemon off;"]
 
+```
+
+- nginx/hompage.conf
+
+```bash
+server {
+	listen 80;
+
+	location / {
+		alias /usr/share/nginx/html/homepage/;
+		try_files $uri $uri/ /index.html;
+	}
+}
 ```
 
 
@@ -71,3 +88,7 @@ $ sudo docker run --name vue-test-1 -p 8080:8080 vue-test
 $ sudo docker start vue-test-1
 ```
 
+
+
+- 코치님 자료
+  - https://glen-protest-a92.notion.site/Docker-CI-CD-cf06950540f743f980de82cebd7d0e4d
