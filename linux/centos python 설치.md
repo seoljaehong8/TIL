@@ -1,5 +1,5 @@
 ```bash
-sudo yum -y install gcc openssl-devel libffi-devel bzip2-devel
+sudo yum -y install gcc openssl-devel libffi-devel bzip2-devel sqlite-devel
 wget https://python.org/ftp/python/3.8.7/Python-3.8.7.tgz
 tar xzf Python-3.8.7.tgz 
 cd Python-3.8.7/
