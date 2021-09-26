@@ -222,6 +222,7 @@ $ sudo apt install npm
 
 
 ```bash
+# ubuntu에 mysql 
 $ sudo apt update
 $ sudo apt install mysql-server
 $ mysql -u admin -p -h mysql-1.cxgaxmvbweba.us-east-1.rds.amazonaws.com
@@ -259,3 +260,4 @@ DATABASES = {
       }  
 ```
 
+안될경우 : https://sweji-home.tistory.com/45
