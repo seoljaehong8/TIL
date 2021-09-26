@@ -103,7 +103,7 @@ $ sudo firewall-cmd --list-all
 > >                 </Files>
 > >         </Directory>
 > > 
-> > 
+> >         # python-path:장고프로젝트 폴더 위치 / python-home:가상환경 venv 위치
 > >         WSGIDaemonProcess final-pjt-back python-path=/home/ubuntu/final-pjt-back/final-pjt-back python-home=/home/ubuntu/final-pjt-back/final-pjt-back/venv
 > >         WSGIProcessGroup final-pjt-back
 > >         WSGIScriptAlias / /home/ubuntu/final-pjt-back/final-pjt-back/MovieCommunity/wsgi.py
