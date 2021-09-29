@@ -240,6 +240,8 @@ $ sudo aptinstall libmysqlclient-dev
 $ sudo apt install python3-mysqldb
 $ sudo apt-get install gcc -y
 
+$ pip install mysqlclient
+
 
 
 DATABASES = {
