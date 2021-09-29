@@ -233,12 +233,15 @@ mysql> grant all privileges on movies.* to 'jaehong'@'%';
 mysql> show grants for 'jaehong'@'%';
 mysql> flush privileges;
 
-# 밑에 설치로 안되면 그다음 설치할 것
+# 밑에 설치로 안되면 그다음 설치할 것(ubuntu)
 $ sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
 
 $ sudo aptinstall libmysqlclient-dev
 $ sudo apt install python3-mysqldb
 $ sudo apt-get install gcc -y
+
+# Amazon Linux(centos)
+$ sudo yum install python3-devel mysql-devel gcc -y
 
 $ pip install mysqlclient
 
