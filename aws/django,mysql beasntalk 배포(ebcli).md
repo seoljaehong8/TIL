@@ -57,7 +57,7 @@ option_settings:
   aws:elasticbeanstalk:environment:process:default:
     DeregistrationDelay: '20'
     HealthCheckInterval: '15'
-    HealthCheckPath: /ok/
+    HealthCheckPath: /health/
     HealthCheckTimeout: '5'
     HealthyThresholdCount: '3'
     UnhealthyThresholdCount: '5'
