@@ -225,6 +225,11 @@ $ sudo apt install npm
 # ubuntu에 mysql 
 $ sudo apt update
 $ sudo apt install mysql-server
+
+#centos에 mysql
+$ sudo yum -y install http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+$ sudo yum -y install mysql-community-server
+
 $ mysql -u admin -p -h mysql-1.cxgaxmvbweba.us-east-1.rds.amazonaws.com
 
 mysql> create database movies;
