@@ -235,3 +235,12 @@ eb terminate django-env(환경 이름)
 
 ````
 
+
+
+Jenkins 서버에서 리눅스 패키지나 파이썬 패키지를 사용할 경우 환경변수 등록
+
+젠킨스 관리 -> 시스템 설정 -> Global properties
+
+다음과 같은 형식으로 추가
+
+![image-20211019150224054](django,mysql beasntalk 배포(ebcli).assets/image-20211019150224054.png)
